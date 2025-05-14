@@ -80,12 +80,15 @@
               <h4 class="my-0 fw-normal">Donate Now!</h4>
             </div>
             <div class="card-body">
-              <form action="/donate" method="post">
+              <form class="needs-validation" novalidate name="donation-form" id="donation-form" action="/donate" method="post">
                 <div class="form-group">
                   <div class="input-group mb-3 input-group-lg">
                     <span class="input-group-text"> Donation Amount $</span>
-                    <input type="text" class="form-control" name="amount" id="amount" placeholder="1,000,000,000"
-                      aria-label="Amount (to the nearest dollar)">
+                    <input type="number" class="form-control" name="amount" id="amount" placeholder="1,000,000,000"
+                      required aria-label="Amount (to the nearest dollar)">
+                      <div class="invalid-feedback">
+                        Valid donation amount is required.
+                      </div>
                     <span class="input-group-text">.00</span>
                   </div>
                   <ul class="list-unstyled mt-3 mb-4"> </ul>
