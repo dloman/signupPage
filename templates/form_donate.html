@@ -6,7 +6,7 @@
       <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
           <img class="d-block mx-auto mb-9" src="static/logo.png" crossorigin=anonymous>
-          <span class="fs-4">  Update Membership Information </span>
+          <span class="fs-4">  Donation Checkout</span>
         </a>
       </div>
       <meta charset="utf-8">
@@ -28,6 +28,8 @@
                 }
               }
       </style>
+      <script src="https://js.braintreegateway.com/web/3.87.0/js/client.min.js"></script>
+      <script src="https://js.braintreegateway.com/web/3.87.0/js/data-collector.min.js"></script>
       <script src="https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js"></script>
       <!-- Custom styles for this template -->
       <link href="static/css/form-validation.css" rel="stylesheet">
@@ -37,22 +39,18 @@
         <main>
           <div class="py-5 text-center">
             <img class="d-block mx-auto mb-4" src="static/logo.png" alt="">
-            <h2>Membership Information Update</h2>
-            <p class="lead">Please enter required information to update SBHX membership.</p>
+            <h2>Donation Checkout</h2>
+            <p class="lead">Please enter required information for SBHX Donation.</p>
           </div>
 
           <div class="row g-5">
             <div class="col-md-5 col-lg-4 order-md-last">
               <h4 class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-secondary">Your Current Membership</span>
+                <span class="text-secondary">Your cart</span>
                 <span class="badge bg-success rounded-pill">1</span>
               </h4>
               <ul class="list-group mb-3">
                 <li class="list-group-item d-flex justify-content-between lh-sm">
-                  <div>
-                    <h6 class="my-0">Membership Type</h6>
-                    <small class="text-muted">{{membership_type}} Membership</small>
-                  </div>
                   <span class="text-muted">{{price}}</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
@@ -61,13 +59,13 @@
                 </li>
               </ul>
             </div>
-            <div class="col-md-7 col-lg-8 mx-auto">
+            <div class="col-md-7 col-lg-8">
               <h4 class="mb-3">Billing address</h4>
               <!-- Putting the empty container you plan to pass to
                 `braintree.dropin.create` inside a form will make layout and flow
                 easier to manage -->
                 </form>
-                <form class="needs-validation" novalidate name="payment-form" id="payment-form" action="/update" method="post">
+                <form class="needs-validation" novalidate name="payment-form" id="payment-form" action="/donation_transaction" method="post">
                   <div class="row g-3">
                     <div class="col-sm-6">
                       <label for="firstName" class="form-label">First name</label>
@@ -183,15 +181,19 @@
                         Zip code required.
                       </div>
                     </div>
+
                   </div>
 
                   <hr class="my-4">
                   <div id="dropin-container"></div><div class="form-group">
+                  <input type="hidden" id="amount" name="amount" value="{{price}}"/>
 
                   <hr class="my-4">
 
+
                   <div id="dropin-container"></div>
                   <input type="hidden" id="nonce" name="payment_method_nonce"/>
+                  <input type="hidden" id="device_data" name="device_data"/>
 
                   <script type="text/javascript">
                     braintree.dropin.create({
@@ -214,6 +216,7 @@
                                                                                                           //   it a the hidden field before submitting the complete form to
                                                                                                           //   a server-side integration
                                                                                                           document.getElementById('nonce').value = payload.nonce;
+                                                                                                          document.getElementById('device_data').value = payload.deviceData;
                                                                                                           var form = document.getElementById('payment-form');
                                                                                                           form.submit();
                                                                                                         });
@@ -221,7 +224,7 @@
                                                             });
                   </script>
 
-                  <button class="w-100 btn btn-success btn-lg" type="submit">Update SBHX Membership Info</button>
+                  <button class="w-100 btn btn-success btn-lg" type="submit">Donate Now</button>
                 </form>
             </div>
           </div>
