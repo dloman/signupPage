@@ -5,6 +5,9 @@ import braintree
 import datetime
 import os
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = flask.Flask(__name__)
 total_donated = 0.0
@@ -194,7 +197,6 @@ def donation_transaction():
     return flask.render_template('error.html')
 
 if __name__ == "__main__":
-
     app.static_folder = 'static'
     app.send_static_file('static/favicon.ico')
     app.send_static_file('static/logo.png')
@@ -204,3 +206,5 @@ if __name__ == "__main__":
     app.wsgi_app = ProxyFix(
             app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
             )
+    app.debug = True
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
