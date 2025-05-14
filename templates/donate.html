@@ -1,217 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Santa Barbara Hackerspace - Donate</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Santa Barbara Hackerspace - Donate</title>
+  <!-- CSS reset -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+    crossorigin="anonymous"></script>
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
       }
+    }
+  </style>
+</head>
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
+<body>
 
   <div class="container py-3">
-  <header>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-      <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
-        <img class="d-block mx-auto mb-9" src="static/logo.png" crossorigin=anonymous>
+    <header>
+      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+      <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+          <img class="d-block mx-auto mb-9" src="static/logo.png" crossorigin=anonymous>
 
-        <span class="fs-4"> SBHX Donation </span>
-      </a>
-    </div>
-
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
-      <h1 class="display-4 fw-normal">SBHX Move Fundraiser</h1>
-      <p class="fs-5 text-muted">
-        The Santa Barbara Hackerspace has been a community hub for makers, tinkerers, and tech enthusiasts since its founding.
-        Unfortunately, our previous building was sold, and the new landlords proposed an unsustainable 80% rent increase.
-        We had to leave.
-      </p>
-    </div>
-  </header>
-
-  <main>
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
-    <h2 class="display-6 text-center mb-4">We Lost Our Space – But Not Our Spirit</h2>
-      <p class="fs-5 text-muted">
-        Fortunately, we found a new building—but it’s an empty shell. To turn it into a functional hackerspace again, we need to raise money
-        to cover the move, build-out, and infrastructure.
-      </p>
-
-      <p class="fs-5 text-bold">
-      Here is our fundraising progress so far: 
-      </p>
-      <div class="progress">
-	      <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="{{percent}}" aria-valuemin="0" aria-valuemax="100">${{total_donated}} ({{percent}}% of our goal)</div>
+          <span class="fs-4"> SBHX Donation </span>
+        </a>
       </div>
-    </div>
 
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
-      <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm border-success">
-          <div class="card-header py-3">
-            <h4 class="my-0 fw-normal">Donate Now!</h4>
-          </div>
-          <div class="card-body">
-                <form action="/donate" method="post">
+      <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
+        <h1 class="display-4 fw-normal">SBHX Move Fundraiser</h1>
+        <p class="fs-5 text-muted">
+          The Santa Barbara Hackerspace has been a community hub for makers, tinkerers, and tech enthusiasts since its
+          founding.
+          Unfortunately, our previous building was sold, and the new landlords proposed an unsustainable 80% rent
+          increase.
+          We had to leave.
+        </p>
+      </div>
+    </header>
+
+    <main>
+      <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
+        <h2 class="display-6 text-center mb-4">We Lost Our Space – But Not Our Spirit</h2>
+        <p class="fs-5 text-muted">
+          Fortunately, we found a new building—but it’s an empty shell. To turn it into a functional hackerspace again,
+          we need to raise money
+          to cover the move, build-out, and infrastructure.
+        </p>
+
+        <p class="fs-5 text-bold">
+          Here is our fundraising progress so far:
+        </p>
+        <div class="progress">
+          <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="{{percent}}"
+            aria-valuemin="0" aria-valuemax="100">${{total_donated}} ({{percent}}% of our goal)</div>
+        </div>
+      </div>
+
+      <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
+        <div class="col">
+          <div class="card mb-4 rounded-3 shadow-sm border-success">
+            <div class="card-header py-3">
+              <h4 class="my-0 fw-normal">Donate Now!</h4>
+            </div>
+            <div class="card-body">
+              <form action="/donate" method="post">
                 <div class="form-group">
-		    <div class="input-group mb-3 input-group-lg">
-		      <span class="input-group-text"> Donation Amount $</span>
-		      <input type="text" class="form-control" name="amount" id="amount" placeholder="1,000,000,000" aria-label="Amount (to the nearest dollar)">
-		      <span class="input-group-text">.00</span>
-		    </div>
-                    <ul class="list-unstyled mt-3 mb-4"> </ul>
-		    <button class="w-100 btn btn-success btn-lg" type="submit">Donate Now!</button>
+                  <div class="input-group mb-3 input-group-lg">
+                    <span class="input-group-text"> Donation Amount $</span>
+                    <input type="text" class="form-control" name="amount" id="amount" placeholder="1,000,000,000"
+                      aria-label="Amount (to the nearest dollar)">
+                    <span class="input-group-text">.00</span>
+                  </div>
+                  <ul class="list-unstyled mt-3 mb-4"> </ul>
+                  <button class="w-100 btn btn-success btn-lg" type="submit">Donate Now!</button>
 
-	        </div>
-		</form>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
-	    <div class="container text-center">
-		    <div class="row">
-			    <div class="col">
-				    <strong> Current Space </strong>
-			    </div>
-			    <div class="col">
-				    <strong> What we want to build </strong>
-			    </div>
-		    </div>
-		    <div class="row">
-			    <div  class="col">
-				     <video width="600" height="400" controls>
-					     <source src="static/CurrentSpace.mp4" type="video/mp4">
-					     <source src="static/CurrentSpace.ogg" type="video/ogg">
-					     Your browser does not support the video tag.
-				     </video>
-			    </div>
-			    <div class="col">
-				    <img class="d-block w-100" src="static/1.png" alt="1st Render" >
+      <div class="pricing-header pb-md-4 mx-auto border-secondary">
+        <div class="container py-4">
+          <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6 mb-4">
+              <h4 class="">Current Space</h4>
+              <div class="ratio ratio-16x9">
+                <video width="600" height="400" controls>
+                  <source src="static/CurrentSpace.mp4" type="video/mp4">
+                  <source src="static/CurrentSpace.ogg" type="video/ogg">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
 
-			    </div>
-		    </div>
-	    </div>
-    </div>
+            <!-- Right Column -->
+            <div class="col-md-6 mb-4">
+              <h4 class="">Future Space</h4>
+              <div class="ratio ratio-16x9">
+                <img class="d-block w-100" src="static/1.png" alt="1st Render">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <h3 class="text-bold">
+        Itemized list of estimated moving costs:
+      </h3>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Expense</th>
+            <th scope="col">Estimated Cost</th>
+            <th scope="col">Need</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="table-danger" scope="row">Security Deposit</th>
+            <td class="table-danger">$12,000</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Office Buildout</th>
+            <td class="table-danger">$9,000</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Floor Refinish/Sealing </th>
+            <td class="table-danger">$10,000</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Lighting </th>
+            <td class="table-danger">$5,000</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">June Rent at old space </th>
+            <td class="table-danger">$5,129</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Movers for HAAS, Bridgeport and Lasers </th>
+            <td class="table-danger">$1,900</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Flatbed Truck with lift gate </th>
+            <td class="table-danger">$1200($400/day 9 days)</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-danger" scope="row">Rolloff Dumpster</th>
+            <td class="table-danger">$~2000 (depends on tonnage of trash)</td>
+            <td class="table-danger">Required</td>
+          </tr>
+          <tr>
+            <th class="table-success" scope="row">Frosted Glass Paritions (For Natural Light in classroom) </th>
+            <td class="table-success">$9000</td>
+            <td class="table-success">Important</td>
+          </tr>
+          <tr>
+            <th class="table-success" scope="row">New Chairs</th>
+            <td class="table-success">$2000 (25 chairs at $80 each)</td>
+            <td class="table-success">Important</td>
+          </tr>
+          <tr>
+            <th class="table-primary" scope="row">Tool Organization and Storage</th>
+            <td class="table-primary">$5000</td>
+            <td class="table-primary">Desirable</td>
+          </tr>
+          <tr>
+            <th class="table-primary" scope="row">Welding Curtain </th>
+            <td class="table-primary">$600</td>
+            <td class="table-primary">Desirable</td>
+          </tr>
+          <tr>
+            <th class="table-primary" scope="row">Outdoor Sign </th>
+            <td class="table-primary">$500</td>
+            <td class="table-primary">Desirable</td>
+          </tr>
+          <tr>
+            <th class="table-warning" scope="row">Fiber Laser </th>
+            <td class="table-warning">$30000</td>
+            <td class="table-warning">Stretch Goal</td>
+          </tr>
+        </tbody>
+      </table>
 
+      <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
+        <p class="fs-5 text-bold">
+          Here is where the new space is located:
+        </p>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3290.689057242694!2d-119.82887742426702!3d34.43465257301528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80e9407856971bd9%3A0x148dbae296c925f5!2s302%20Pine%20Ave%2C%20Goleta%2C%20CA%2093117!5e0!3m2!1sen!2sus!4v1746848156149!5m2!1sen!2sus"
+          width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
 
-      <p class="fs-5 text-bold">
-      Itemized list of estimated moving costs:
-      </p>
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th scope="col">Expense</th>
-      <th scope="col">Estimated Cost</th>
-      <th scope="col">Need</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th class="table-danger" scope="row">Security Deposit</th>
-      <td  class="table-danger">$12,000</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Office Buildout</th>
-      <td class="table-danger">$9,000</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Floor Refinish/Sealing </th>
-      <td class="table-danger" >$10,000</td>
-      <td class="table-danger" >Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Lighting </th>
-      <td class="table-danger">$5,000</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">June Rent at old space </th>
-      <td class="table-danger">$5,129</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Movers for HAAS, Bridgeport and Lasers </th>
-      <td class="table-danger">$1,900</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Flatbed Truck with lift gate </th>
-      <td class="table-danger">$1200($400/day 9 days)</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-danger" scope="row">Rolloff Dumpster</th>
-      <td class="table-danger">$~2000 (depends on tonnage of trash)</td>
-      <td class="table-danger">Required</td>
-    </tr>
-    <tr>
-      <th class="table-success" scope="row">Frosted Glass Paritions (For Natural Light in classroom) </th>
-      <td class="table-success">$9000</td>
-      <td class="table-success">Important</td>
-    </tr>
-    <tr>
-      <th class="table-success" scope="row">New Chairs</th>
-      <td class="table-success">$2000 (25 chairs at $80 each)</td>
-      <td class="table-success">Important</td>
-    </tr>
-    <tr>
-      <th class="table-primary" scope="row">Tool Organization and Storage</th>
-      <td class="table-primary">$5000</td>
-      <td class="table-primary">Desirable</td>
-    </tr>
-    <tr>
-      <th class="table-primary" scope="row">Welding Curtain </th>
-      <td class="table-primary">$600</td>
-      <td class="table-primary">Desirable</td>
-    </tr>
-    <tr>
-      <th class="table-primary" scope="row">Outdoor Sign </th>
-      <td class="table-primary">$500</td>
-      <td class="table-primary">Desirable</td>
-    </tr>
-    <tr>
-      <th class="table-warning" scope="row">Fiber Laser </th>
-      <td class="table-warning">$30000</td>
-      <td class="table-warning">Stretch Goal</td>
-    </tr>
-  </tbody>
-</table>
-
-    <div class="pricing-header p-3 pb-md-4 mx-auto text-center border-secondary">
-      <p class="fs-5 text-bold">
-      Here is where the new space is located:
-      </p>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3290.689057242694!2d-119.82887742426702!3d34.43465257301528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80e9407856971bd9%3A0x148dbae296c925f5!2s302%20Pine%20Ave%2C%20Goleta%2C%20CA%2093117!5e0!3m2!1sen!2sus!4v1746848156149!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-
-  </main>
+    </main>
 
 
   </div>
 </body>
-</html>
 
+</html>
