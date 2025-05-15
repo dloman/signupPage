@@ -42,7 +42,7 @@ bt_gateway = braintree.BraintreeGateway(
 def index():
     global total_donated
     return flask.render_template(
-              'donate.html', 
+              'donate.html',
               total_donated="{:,}".format(int(total_donated)),
               percent="{:}".format(int(100*total_donated/100000.)),
               year = datetime.date.today().year)
@@ -51,7 +51,7 @@ def index():
 def donate_store():
     global total_donated
     return flask.render_template(
-              'donation_store.html', 
+              'donation_store.html',
               year = datetime.date.today().year)
 @app.route('/update_info')
 def update_info():
@@ -106,6 +106,7 @@ def donate():
     return flask.render_template(
             'form_donate.html',
             price=request.form.get("amount"),
+            item=request.form.get("item"),
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
