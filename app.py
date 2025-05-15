@@ -7,11 +7,12 @@ import os
 import json
 from dotenv import load_dotenv
 import logging
-logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 app = flask.Flask(__name__)
+app.logger = logging.getLogger('waitress')
+app.logger.setLevel(logging.INFO)
 total_donated = 0.0
 try:
     with open('donationTotal.json', 'r') as openfile:
