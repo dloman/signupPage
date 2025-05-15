@@ -79,9 +79,12 @@
                 <div class="card-body">
                   <p class="card-text"> This is a once in a lifetime opportunity to own the most import seat in the Santa Barbara Hackerspace. For this incredibly low price you could win the rights to name one of our exclusive toilets after you or a loved one. Act fast because these golden thrones won't be available for long.</p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now $5000</button>
-                    </div>
+                    <form id="toilet-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now $5000</button>
+                        <input type="number" class="form-control" name="amount" id="amount" hidden="true" value="5000" />
+                      </div>
+                    </form>
                     <small class="text-muted">Only 2 remaining!</small>
                   </div>
                 </div>
@@ -93,9 +96,12 @@
                 <div class="card-body">
                   <p class="card-text">Get ready to update your wordrobe and embrace a new look and style. Summer is coming so make sure youre ready to look phenominal in this 100% real T-shirt. It's made from the finest of cloths. 100% of it's maunfacturing was made entirely on earth so not only our you looking good but you're also shopping local.  You wont find anything with the hackerspace logo that is of better quality. </p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now $55</button>
-                    </div>
+                    <form id="shirt-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now $55</button>
+                        <input type="number" class="form-control" name="amount" id="amount" hidden="true" value="55" />
+                      </div>
+                    </form>
                     <small class="text-muted">Only 19 remaining!</small>
                   </div>
                 </div>
@@ -107,9 +113,12 @@
                 <div class="card-body">
                   <p class="card-text">This bottle opener is the single greatest innovation to come to bottle opening technology since the invention of the edge of tables. Crush beverages with ease and style. </p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now $35</button>
-                    </div>
+                    <form id="bottle-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now $35</button>
+                        <input type="number" class="form-control" name="amount" id="amount" hidden="true" value="35" />
+                      </div>
+                    </form>
                     <small class="text-muted">Only ∞ remaining!</small>
                   </div>
                 </div>
@@ -122,9 +131,12 @@
                 <div class="card-body">
                   <p class="card-text">Are you tired of not being able to know distances of things are? Thne you're in luck because we have custom SBHX tape measures. You can measure things in style and comfort knowing you are awesome and helped the Santa Barbara Hackerspace to thrive.</p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now $25</button>
-                    </div>
+                    <form id="tape-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now $28</button>
+                        <input type="number" class="form-control" name="amount" id="amount" hidden="true" value="28" />
+                      </div>
+                    </form>
                     <small class="text-muted">Only ∞ remaining!</small>
                   </div>
                 </div>
@@ -136,9 +148,12 @@
                 <div class="card-body">
                   <p class="card-text">Full Product Description.</p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now ${{price}}</button>
-                    </div>
+                    <form id="-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now ${{price}}</button>
+                      </div>
+                    </form>
+
                     <small class="text-muted">Only ∞ remaining!</small>
                   </div>
                 </div>
@@ -150,9 +165,11 @@
                 <div class="card-body">
                   <p class="card-text">Full Product Description.</p>
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-success">Buy Now ${{price}}</button>
-                    </div>
+                    <form id="-form" action="/donate" method="post">
+                      <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-success">Buy Now ${{price}}</button>
+                      </div>
+                    </form>
                     <small class="text-muted">Only ∞ remaining!</small>
                   </div>
                 </div>
