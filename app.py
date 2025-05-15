@@ -15,7 +15,7 @@ try:
     with open('donationTotal.json', 'r') as openfile:
         total_donated = float(json.load(openfile)["total_donated"])
 except:
-    print("An exception occurred reading total donated")
+    app.logger.error("An exception occurred reading total donated")
     total_donated = 2000
 
 def get_enviroment(env):
@@ -68,8 +68,9 @@ def update_info():
 def update():
     collection = bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email"))
 
+    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     for customer in collection.items:
-        print(f"updating cusomter {customer}")
+        app.logger.info(f"updating cusomter {customer}")
         result = bt_gateway.customer.update(
             customer.id,
             {
@@ -89,15 +90,15 @@ def update():
                 },
                 "payment_method_nonce": request.form.get("payment_method_nonce"),
             })
-        print(f"result = {result}")
+        app.logger.debug(f"result = {result}")
         if not result.is_success:
-            print(f"ERROR: {result.message}")
+            app.logger.error(f"ERROR: {result.message}")
             return flask.render_template('error.html')
         return flask.render_template(
                 'thanks.html',
                 title="Membership Information Updated",
                 thanks="Thank you for continuing to be a sustaining sbhx member.")
-    print(f"ERROR: unable to find customers")
+    app.logger.error(f"ERROR: unable to find customers")
     return flask.render_template('error.html')
 
 
@@ -149,11 +150,11 @@ def signup():
         "payment_method_nonce": request.form.get("payment_method_nonce"),
         })
     if not result.is_success:
-        print(f"ERROR: {result.errors}")
+        app.logger.error(f"ERROR: {result.errors}")
         return flask.render_template('error.html')
 
     if len(result.customer.credit_cards) < 1:
-        print("ERROR: no credit cards ")
+        app.logger.error("ERROR: no credit cards ")
         return flask.render_template('error.html')
 
     for card in result.customer.credit_cards:
@@ -170,13 +171,13 @@ def signup():
                     title="Membership Information Updated",
                     thanks="Thank you for becoming a sustaining SBHX Member")
 
-        print(f"ERROR: {sub_result.errors}")
+        app.logger.error(f"ERROR: {sub_result.errors}")
     return flask.render_template('error.html')
 
 @app.route("/donation_transaction", methods=['POST'])
 def donation_transaction():
     global total_donated
-    print(f"total amount donated = {total_donated}")
+    app.logger.debug(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
         "amount": request.form.get("amount"),
         "payment_method_nonce": request.form.get("payment_method_nonce"),
@@ -193,6 +194,7 @@ def donation_transaction():
         })
     if result.is_success:
         total_donated += float(request.form.get("amount"))
+        app.logger.debug(f"after total amount donated = {total_donated}")
         with open("donationTotal.json", 'w') as f:
             json.dump({"total_donated": total_donated}, f)
         return flask.render_template(
@@ -200,7 +202,7 @@ def donation_transaction():
                 title="Donatation Complete!",
                 thanks="Thank you for being a sustaining SBHX Donor")
 
-    print(f"ERROR: {result} {result.errors}")
+    app.logger.error(f"ERROR: {result} {result.errors}")
     return flask.render_template('error.html')
 
 if __name__ == "__main__":
