@@ -68,7 +68,7 @@ def update_info():
 def update():
     collection = bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email"))
 
-    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")}')
+    app.logger.info(f'updating {request.form.get("first_name")} {request.form.get("last_name")} ')
     for customer in collection.items:
         app.logger.info(f"updating cusomter {customer}")
         result = bt_gateway.customer.update(
@@ -104,6 +104,7 @@ def update():
 
 @app.route('/donate', methods=['POST'])
 def donate():
+    app.logger.debug(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     return flask.render_template(
             'form_donate.html',
             price=request.form.get("amount"),
@@ -176,6 +177,7 @@ def signup():
 
 @app.route("/donation_transaction", methods=['POST'])
 def donation_transaction():
+    app.logger.debug(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     global total_donated
     app.logger.debug(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
