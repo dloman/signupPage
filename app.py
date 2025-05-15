@@ -43,10 +43,16 @@ def index():
     global total_donated
     return flask.render_template(
               'donate.html', 
-              total_donated="{:,}".format(total_donated),
+              total_donated="{:,}".format(int(total_donated)),
               percent="{:}".format(int(100*total_donated/100000.)),
               year = datetime.date.today().year)
 
+@app.route('/donation_storefront')
+def donate_store():
+    global total_donated
+    return flask.render_template(
+              'donation_store.html', 
+              year = datetime.date.today().year)
 @app.route('/update_info')
 def update_info():
     membership_type = request.args.get('membership_type')
