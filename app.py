@@ -110,6 +110,7 @@ def donate():
     app.logger.debug(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     return flask.render_template(
             'form_donate.html',
+            title=request.form.get("title"),
             price=request.form.get("amount"),
             item=request.form.get("item"),
             client_token_from_server= bt_gateway.client_token.generate(),
