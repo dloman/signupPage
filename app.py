@@ -80,7 +80,7 @@ def update():
                 "first_name": request.form.get("first_name"),
                 "last_name": request.form.get("last_name"),
                 "credit_card": {
-                    "options": { "verify_card": True },
+                    "options": { "make_default": True, "verify_card": True },
                     "billing_address": {
                         "first_name": request.form.get("first_name"),
                         "last_name": request.form.get("last_name"),
