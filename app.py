@@ -107,7 +107,7 @@ def update():
 
 @app.route('/donate', methods=['POST'])
 def donate():
-    app.logger.debug(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
+    app.logger.info(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     return flask.render_template(
             'form_donate.html',
             title=request.form.get("title"),
@@ -181,9 +181,9 @@ def signup():
 
 @app.route("/donation_transaction", methods=['POST'])
 def donation_transaction():
-    app.logger.debug(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")}')
+    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     global total_donated
-    app.logger.debug(f"before total amount donated = {total_donated}")
+    app.logger.info(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
         "amount": request.form.get("amount"),
         "payment_method_nonce": request.form.get("payment_method_nonce"),
@@ -200,7 +200,7 @@ def donation_transaction():
         })
     if result.is_success:
         total_donated += float(request.form.get("amount"))
-        app.logger.debug(f"after total amount donated = {total_donated}")
+        app.logger.info(f"after total amount donated = {total_donated}")
         with open("donationTotal.json", 'w') as f:
             json.dump({"total_donated": total_donated}, f)
         return flask.render_template(
@@ -221,5 +221,4 @@ if __name__ == "__main__":
     app.wsgi_app = ProxyFix(
             app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
             )
-    app.debug = True
     app.config["TEMPLATES_AUTO_RELOAD"] = True
