@@ -50,6 +50,7 @@ def index():
               percent="{:}".format(int(100*total_donated/100000.)),
               year = datetime.date.today().year)
 
+
 @app.route('/donation_storefront')
 def donate_store():
     global total_donated
