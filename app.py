@@ -134,6 +134,13 @@ def advanced():
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
+@app.route('/membership_info')
+def membership_info():
+    global total_donated
+    return flask.render_template(
+              'index.html',
+              year = datetime.date.today().year)
+
 @app.route("/signup", methods=['POST'])
 def signup():
     result = bt_gateway.customer.create({

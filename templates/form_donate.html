@@ -199,7 +199,8 @@
                   <script type="text/javascript">
                     braintree.dropin.create({
                                           authorization: '{{client_token_from_server}}',
-                                          container: '#dropin-container'
+                                          container: '#dropin-container',
+			                  paypal: { flow: 'checkout', amount: '{{price}}', currency: 'USD' }
                                         }, (error, dropinInstance) => {
                                                               if (error) console.error(error);
 
