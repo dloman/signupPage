@@ -213,7 +213,7 @@ def donation_transaction():
             json.dump({"total_donated": total_donated}, f)
         return flask.render_template(
                 'thanks.html',
-                title="Donatation Complete!",
+                title="Donation Complete!",
                 thanks="Thank you for being a sustaining SBHX Donor")
 
     app.logger.error(f"ERROR: {result} {result.errors}")
