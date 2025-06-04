@@ -198,7 +198,7 @@ def donation_transaction():
         "payment_method_nonce": request.form.get("payment_method_nonce"),
         "device_data": request.form.get("device_data"),
         "options": { "submit_for_settlement": True },
-        "customer': {
+        'customer': {
                 "first_name": request.form.get("first_name"),
                 "last_name": request.form.get("last_name"),
                 "email": request.form.get("email")
