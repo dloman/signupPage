@@ -214,7 +214,7 @@ def donation_transaction():
             },
         })
     if result.is_success:
-        total_donated += float(request.form.get("amount"))
+        total_donated += 2*float(request.form.get("amount"))
         app.logger.info(f"after total amount donated = {total_donated}")
         with open("donationTotal.json", 'w') as f:
             json.dump({"total_donated": total_donated}, f)
