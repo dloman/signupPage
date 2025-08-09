@@ -201,7 +201,7 @@ def signup():
 
 @app.route("/donation_transaction", methods=['POST'])
 def donation_transaction():
-    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")}')
+    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")} {request.environ.get("HTTP_X_REAL_IP", request.remote_addr)}')
     global total_donated
     app.logger.info(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
