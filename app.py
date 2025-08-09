@@ -31,6 +31,8 @@ def get_plan_id(membership_type):
         return "45kw"
     elif membership_type == "Basic":
         return "sjxm"
+    elif membership_type == "yearly_student":
+        return "2ccj"
     return "j3y6"
 
 bt_gateway = braintree.BraintreeGateway(
@@ -124,6 +126,15 @@ def basic():
             'form.html',
             membership_type="Basic",
             price=75,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_student')
+def yearly_student():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_student",
+            price=360,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
