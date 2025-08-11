@@ -27,13 +27,27 @@ def get_enviroment(env):
     return braintree.Environment.Sandbox
 
 def get_plan_id(membership_type):
-    if membership_type == "student":
+    if membership_type == "student": # $50/month
         return "45kw"
-    elif membership_type == "Basic":
+    elif membership_type == "basic": # $75/month
         return "sjxm"
-    elif membership_type == "yearly_student":
-        return "2ccj"
-    return "j3y6"
+    elif membership_type == "yearly_basic":# $900/year
+        return "hbfj"
+    elif membership_type == "yearly_advanced": # $1200/year
+        return "m27j"
+    elif membership_type == "yearly_student": # $600/year
+        return "63v8"
+    elif membership_type == "old_advanced": # $100/month
+        return "bq82"
+    elif membership_type == "very_old_basic": # $30/month
+        return "4r2w"
+    elif membership_type == "fume_hood": # $200/month
+        return "ssgr"
+    elif membership_type == "paypal_basic": # $45/month
+        return "754y"
+    elif membership_type == "old_basic": # $50/month
+        return "jpf6"
+    return "j3y6" # advanced $125/month
 
 bt_gateway = braintree.BraintreeGateway(
     braintree.Configuration(
@@ -59,6 +73,7 @@ def donate_store():
     return flask.render_template(
               'donation_store.html',
               year = datetime.date.today().year)
+
 @app.route('/update_info')
 def update_info():
     membership_type = request.args.get('membership_type')
@@ -69,6 +84,7 @@ def update_info():
             price=amount,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
+
 
 @app.route('/update', methods=['POST'])
 def update():
@@ -101,10 +117,26 @@ def update():
         if not result.is_success:
             app.logger.error(f"ERROR: {result.message}")
             return flask.render_template('error.html')
-        return flask.render_template(
-                'thanks.html',
-                title="Membership Information Updated",
-                thanks="Thank you for continuing to be a sustaining sbhx member.")
+
+        if len(result.customer.payment_methods) < 1:
+            app.logger.error("ERROR: no payment methods ")
+            return flask.render_template('error.html')
+
+        for card in result.customer.payment_methods:
+            sub_result = bt_gateway.subscription.create({
+                "payment_method_token": card.token,
+                "plan_id": get_plan_id(request.form.get("membership_type")),
+                "options": {
+                    "submit_for_settlement": True
+                    }
+                })
+            if sub_result.is_success:
+                return flask.render_template(
+                        'thanks.html',
+                        title="Membership Information Updated",
+                        thanks="Thank you for continuing to be a sustaining sbhx member.")
+
+            app.logger.error(f"ERROR: {sub_result.errors}")
     app.logger.error(f"ERROR: unable to find customers")
     return flask.render_template('error.html')
 
@@ -129,12 +161,28 @@ def basic():
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
+@app.route('/yearly_advanced')
+def yearly_student():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_advanced",
+            price=600,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+@app.route('/yearly_basic')
+def yearly_student():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_basic",
+            price=600,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
 @app.route('/yearly_student')
 def yearly_student():
     return flask.render_template(
             'form.html',
             membership_type="yearly_student",
-            price=360,
+            price=600,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
@@ -142,7 +190,7 @@ def yearly_student():
 def advanced():
     return flask.render_template(
             'form.html',
-            membership_type="Advanced",
+            membership_type="advanced",
             price=125,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
@@ -156,6 +204,10 @@ def membership_info():
 
 @app.route("/signup", methods=['POST'])
 def signup():
+    if len(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items) > 0:
+        print("found customer redirecting to update endpoint")
+        return redirect(url_for('update'))
+
     result = bt_gateway.customer.create({
         "first_name": request.form.get("first_name"),
         "last_name": request.form.get("last_name"),
@@ -178,14 +230,14 @@ def signup():
         app.logger.error(f"ERROR: {result.errors}")
         return flask.render_template('error.html')
 
-    if len(result.customer.credit_cards) < 1:
-        app.logger.error("ERROR: no credit cards ")
+    if len(result.customer.payment_methods) < 1:
+        app.logger.error("ERROR: no payment methods ")
         return flask.render_template('error.html')
 
-    for card in result.customer.credit_cards:
+    for card in result.customer.payment_methods:
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
-            "plan_id": get_plan_id(request.form.get("plan_id")),
+            "plan_id": get_plan_id(request.form.get("membership_type")),
             "options": {
                 "submit_for_settlement": True
                 }
