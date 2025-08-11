@@ -185,10 +185,7 @@ def signup():
     for card in result.customer.credit_cards:
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
-            "plan_id": get_plan_id(request.form.get("plan_id")),
-            "options": {
-                "submit_for_settlement": True
-                }
+            "plan_id": get_plan_id(request.form.get("plan_id"))
             })
         if sub_result.is_success:
             return flask.render_template(
