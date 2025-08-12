@@ -126,9 +126,6 @@ def update():
             sub_result = bt_gateway.subscription.create({
                 "payment_method_token": card.token,
                 "plan_id": get_plan_id(request.form.get("membership_type")),
-                "options": {
-                    "submit_for_settlement": True
-                    }
                 })
             if sub_result.is_success:
                 return flask.render_template(
