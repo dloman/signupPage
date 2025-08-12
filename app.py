@@ -234,6 +234,7 @@ def signup():
         return flask.render_template('error.html')
 
     for card in result.customer.payment_methods:
+        print(f"{request.form.get('membership_type')} {get_plan_id(request.form.get('membership_type'))}"
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
             "plan_id": get_plan_id(request.form.get("membership_type")),
