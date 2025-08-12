@@ -208,7 +208,7 @@ def membership_info():
 def signup():
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         print("found customer redirecting to update endpoint")
-        return flask.redirect(flask.url_for('update'), , code=307)
+        return flask.redirect(flask.url_for('update'), code=307)
 
     result = bt_gateway.customer.create({
         "first_name": request.form.get("first_name"),
