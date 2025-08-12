@@ -206,7 +206,7 @@ def membership_info():
 
 @app.route("/signup", methods=['POST'])
 def signup():
-    if len(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items) > 0:
+    if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         print("found customer redirecting to update endpoint")
         return redirect(url_for('update'))
 
