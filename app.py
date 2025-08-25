@@ -8,6 +8,8 @@ import json
 from dotenv import load_dotenv
 import logging
 import uuid
+import hmac
+import hashlib
 
 load_dotenv()
 
@@ -56,7 +58,7 @@ def generate_hash(hash_uuid = None, hash_date = None):
 
     if hash_date is None:
         hash_date = datetime.date.today()
-    secret_key = b"secret key to prevent fraud"  # Key must be bytes
+    secret_key = b"secret key to prevent fraud"  
     message = f"{hash_uuid}{hash_date.isoformat()}"
     message = message.encode('utf-8')
 
@@ -64,7 +66,7 @@ def generate_hash(hash_uuid = None, hash_date = None):
     # The key and message should be byte strings
     hmac_obj = hmac.new(secret_key, message, hashlib.sha256)
     # Get the hexadecimal representation of the HMAC digest
-    return hmac_obj.hexdigest()
+    return f"{hmac_obj.hexdigest()}"
 
 bt_gateway = braintree.BraintreeGateway(
     braintree.Configuration(
@@ -277,9 +279,14 @@ def donation_transaction():
     global total_donated
 
     # check that hash in the request comes from app and is recent
-    request_date = date.fromisoformat(request.form.get("date"))
-    if (datetime.date.today() - request_date).days < 2 and request.form.get("hash") == generate_hash(request.form.get("uuid"), request_date):
-        app.logger.error(f"ERROR: {result} {result.errors}")
+    request_date = datetime.date.fromisoformat(request.form.get("date"))
+    if (datetime.date.today() - request_date).days > 2:
+        app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
+        return flask.render_template('error.html')
+
+    generated_hash = generate_hash(request.form.get("uuid"), request_date)
+    if request.form.get("hash") != generated_hash:
+        app.logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
         return flask.render_template('error.html')
 
     app.logger.info(f"before total amount donated = {total_donated}")
