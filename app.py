@@ -153,7 +153,7 @@ def donate():
 def basic():
     return flask.render_template(
             'form.html',
-            membership_type="Basic",
+            membership_type="basic",
             price=75,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
@@ -176,14 +176,14 @@ def yearly_basic():
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
-@app.route('/yearly_student')
-def yearly_student():
-    return flask.render_template(
-            'form.html',
-            membership_type="yearly_student",
-            price=600,
-            client_token_from_server= bt_gateway.client_token.generate(),
-            year = datetime.date.today().year)
+#@app.route('/yearly_student')
+#def yearly_student():
+#    return flask.render_template(
+#            'form.html',
+#            membership_type="yearly_student",
+#            price=600,
+#            client_token_from_server= bt_gateway.client_token.generate(),
+#            year = datetime.date.today().year)
 
 @app.route('/advanced')
 def advanced():
@@ -234,7 +234,6 @@ def signup():
         return flask.render_template('error.html')
 
     for card in result.customer.payment_methods:
-        print(f"{request.form.get('membership_type')} {get_plan_id(request.form.get('membership_type'))}"
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
             "plan_id": get_plan_id(request.form.get("membership_type")),
