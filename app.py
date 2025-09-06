@@ -190,15 +190,6 @@ def student():
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
-@app.route('/yearly_student')
-def yearly_student():
-    return flask.render_template(
-            'form.html',
-            membership_type="yearly_student",
-            price=600,
-            client_token_from_server= bt_gateway.client_token.generate(),
-            year = datetime.date.today().year)
-
 @app.route('/advanced')
 def advanced():
     return flask.render_template(
