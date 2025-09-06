@@ -153,35 +153,17 @@ def donate():
 def basic():
     return flask.render_template(
             'form.html',
-            membership_type="Basic",
+            membership_type="basic",
             price=75,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
-@app.route('/yearly_advanced')
-def yearly_advanced():
+@app.route('/student')
+def student():
     return flask.render_template(
             'form.html',
-            membership_type="yearly_advanced",
-            price=600,
-            client_token_from_server= bt_gateway.client_token.generate(),
-            year = datetime.date.today().year)
-
-@app.route('/yearly_basic')
-def yearly_basic():
-    return flask.render_template(
-            'form.html',
-            membership_type="yearly_basic",
-            price=600,
-            client_token_from_server= bt_gateway.client_token.generate(),
-            year = datetime.date.today().year)
-
-@app.route('/yearly_student')
-def yearly_student():
-    return flask.render_template(
-            'form.html',
-            membership_type="yearly_student",
-            price=600,
+            membership_type="student",
+            price=50,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
@@ -191,6 +173,33 @@ def advanced():
             'form.html',
             membership_type="advanced",
             price=125,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_advanced')
+def yearly_advanced():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_advanced",
+            price=1200,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_basic')
+def yearly_basic():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_basic",
+            price=900,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_student')
+def yearly_student():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_student",
+            price=600,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
@@ -234,13 +243,9 @@ def signup():
         return flask.render_template('error.html')
 
     for card in result.customer.payment_methods:
-        print(f"{request.form.get('membership_type')} {get_plan_id(request.form.get('membership_type'))}"
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
             "plan_id": get_plan_id(request.form.get("membership_type")),
-            "options": {
-                "submit_for_settlement": True
-                }
             })
         if sub_result.is_success:
             return flask.render_template(
