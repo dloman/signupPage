@@ -7,6 +7,9 @@ import os
 import json
 from dotenv import load_dotenv
 import logging
+import uuid
+import hmac
+import hashlib
 
 load_dotenv()
 
@@ -48,6 +51,22 @@ def get_plan_id(membership_type):
     elif membership_type == "old_basic": # $50/month
         return "jpf6"
     return "j3y6" # advanced $125/month
+
+def generate_hash(hash_uuid = None, hash_date = None):
+    if hash_uuid is None:
+        has_uuid = uuid.uuid4()
+
+    if hash_date is None:
+        hash_date = datetime.date.today()
+    secret_key = b"secret key to prevent fraud"
+    message = f"{hash_uuid}{hash_date.isoformat()}"
+    message = message.encode('utf-8')
+
+    # Create an HMAC object using SHA-256 as the digestmod
+    # The key and message should be byte strings
+    hmac_obj = hmac.new(secret_key, message, hashlib.sha256)
+    # Get the hexadecimal representation of the HMAC digest
+    return f"{hmac_obj.hexdigest()}"
 
 bt_gateway = braintree.BraintreeGateway(
     braintree.Configuration(
@@ -141,13 +160,17 @@ def update():
 @app.route('/donate', methods=['POST'])
 def donate():
     app.logger.info(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form_donate.html',
             title=request.form.get("title"),
             price=request.form.get("amount"),
             item=request.form.get("item"),
             client_token_from_server= bt_gateway.client_token.generate(),
-            year = datetime.date.today().year)
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
+            year=datetime.date.today().year)
 
 @app.route('/basic')
 def basic():
@@ -164,6 +187,24 @@ def student():
             'form.html',
             membership_type="student",
             price=50,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_basic')
+def yearly_basic():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_basic",
+            price=600,
+            client_token_from_server= bt_gateway.client_token.generate(),
+            year = datetime.date.today().year)
+
+@app.route('/yearly_student')
+def yearly_student():
+    return flask.render_template(
+            'form.html',
+            membership_type="yearly_student",
+            price=600,
             client_token_from_server= bt_gateway.client_token.generate(),
             year = datetime.date.today().year)
 
@@ -260,6 +301,18 @@ def signup():
 def donation_transaction():
     app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")} {request.environ.get("HTTP_X_REAL_IP", request.remote_addr)}')
     global total_donated
+
+    # check that hash in the request comes from app and is recent
+    request_date = datetime.date.fromisoformat(request.form.get("date"))
+    if (datetime.date.today() - request_date).days > 2:
+        app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
+        return flask.render_template('error.html')
+
+    generated_hash = generate_hash(request.form.get("uuid"), request_date)
+    if request.form.get("hash") != generated_hash:
+        app.logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
+        return flask.render_template('error.html')
+
     app.logger.info(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
         "amount": request.form.get("amount"),
