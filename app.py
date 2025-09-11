@@ -142,11 +142,13 @@ def update():
             return flask.render_template('error.html')
 
         for card in result.customer.payment_methods:
+            app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
             sub_result = bt_gateway.subscription.create({
                 "payment_method_token": card.token,
                 "plan_id": get_plan_id(request.form.get("membership_type")),
                 })
             if sub_result.is_success:
+                app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership updated! ')
                 return flask.render_template(
                         'thanks.html',
                         title="Membership Information Updated",
@@ -239,6 +241,8 @@ def signup():
         app.logger.info("found customer redirecting to update endpoint")
         return flask.redirect(flask.url_for('update'))
 
+    
+    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} creating customer! ')
     result = bt_gateway.customer.create({
         "first_name": request.form.get("first_name"),
         "last_name": request.form.get("last_name"),
@@ -266,11 +270,14 @@ def signup():
         return flask.render_template('error.html')
 
     for card in result.customer.payment_methods:
+        app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
             "plan_id": get_plan_id(request.form.get("membership_type")),
             })
         if sub_result.is_success:
+            
+            app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership created! ')
             return flask.render_template(
                     'thanks.html',
                     title="Membership Information Updated",
