@@ -285,8 +285,11 @@ def donation_transaction():
     global total_donated
 
     # check that hash in the request comes from app and is recent
-    request_date = datetime.date.fromisoformat(request.form.get("date"))
-    if (datetime.date.today() - request_date).days > 2:
+    try:
+        request_date = datetime.date.fromisoformat(request.form.get("date"))
+    except:
+        request_date = None
+    if request_date is None or (datetime.date.today() - request_date).days > 2:
         app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
         return flask.render_template('error.html')
 
