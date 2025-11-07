@@ -76,6 +76,23 @@ bt_gateway = braintree.BraintreeGateway(
         private_key=os.environ["PRIVATE_KEY"],
     ))
 
+def hash_invalid(date, uuid, request_hash):
+    # check that hash in the request comes from app and is recent
+    try:
+        request_date = datetime.date.fromisoformat(request.form.get("date"))
+    except:
+        request_date = None
+    if request_date is None or (datetime.date.today() - request_date).days > 2:
+        app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
+        return True
+
+    generated_hash = generate_hash(request.form.get("uuid"), request_date)
+    if request.form.get("hash") != generated_hash:
+        app.logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
+        return True
+    else:
+        return False
+
 @app.route('/')
 def index():
     global total_donated
@@ -176,56 +193,80 @@ def donate():
 
 @app.route('/basic')
 def basic():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="basic",
             price=75,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/student')
 def student():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="student",
             price=50,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/advanced')
 def advanced():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="advanced",
             price=125,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/yearly_advanced')
 def yearly_advanced():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="yearly_advanced",
             price=1200,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/yearly_basic')
 def yearly_basic():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="yearly_basic",
             price=900,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/yearly_student')
 def yearly_student():
+    request_uuid = uuid.uuid4()
     return flask.render_template(
             'form.html',
             membership_type="yearly_student",
             price=600,
             client_token_from_server= bt_gateway.client_token.generate(),
+            request_uuid=request_uuid,
+            request_hash=generate_hash(request_uuid),
+            request_date=datetime.date.today(),
             year = datetime.date.today().year)
 
 @app.route('/membership_info')
@@ -237,6 +278,9 @@ def membership_info():
 
 @app.route("/signup", methods=['POST'])
 def signup():
+    if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
+        return flask.render_template('error.html')
+
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         app.logger.info("found customer redirecting to update endpoint")
         return flask.redirect(flask.url_for('update'))
@@ -291,19 +335,9 @@ def donation_transaction():
     app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")} {request.environ.get("HTTP_X_REAL_IP", request.remote_addr)}')
     global total_donated
 
-    # check that hash in the request comes from app and is recent
-    try:
-        request_date = datetime.date.fromisoformat(request.form.get("date"))
-    except:
-        request_date = None
-    if request_date is None or (datetime.date.today() - request_date).days > 2:
-        app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
+    if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
         return flask.render_template('error.html')
 
-    generated_hash = generate_hash(request.form.get("uuid"), request_date)
-    if request.form.get("hash") != generated_hash:
-        app.logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
-        return flask.render_template('error.html')
 
     app.logger.info(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
