@@ -280,6 +280,8 @@ def membership_info():
 def signup():
     if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
         return flask.render_template('error.html')
+    else:
+        app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} {request.form.get("date")}, {request.form.get("uuid")}, {request.form.get("hash")}! ')
 
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         app.logger.info("found customer redirecting to update endpoint")
