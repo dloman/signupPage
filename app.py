@@ -10,6 +10,7 @@ import logging
 import uuid
 import hmac
 import hashlib
+import welcome
 
 load_dotenv()
 
@@ -124,9 +125,9 @@ def update_info():
 
 @app.route('/update', methods=['POST'])
 def update():
+    app.logger.info(f'updating {request.form.get("first_name")} {request.form.get("last_name")} ')
     collection = bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email"))
 
-    app.logger.info(f'updating {request.form.get("first_name")} {request.form.get("last_name")} ')
     for customer in collection.items:
         app.logger.info(f"updating cusomter {customer}")
         result = bt_gateway.customer.update(
@@ -166,6 +167,13 @@ def update():
                 })
             if sub_result.is_success:
                 app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership updated! ')
+                app.logger.info(f"{sub_result.subscription} ")
+                welcome.on_signup(
+                        name = request.form.get("first_name") + ' ' + request.form.get("last_name"),
+                        email = request.form.get("email"),
+                        subscription_id = sub_result.subscription.id,
+                        groups = [request.form.get("membership_type")],
+                        logger = app.logger)
                 return flask.render_template(
                         'thanks.html',
                         title="Membership Information Updated",
@@ -285,7 +293,7 @@ def signup():
 
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         app.logger.info("found customer redirecting to update endpoint")
-        return flask.redirect(flask.url_for('update'))
+        return flask.redirect(flask.url_for('update'), code=307)
 
     
     app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} creating customer! ')
@@ -324,6 +332,17 @@ def signup():
         if sub_result.is_success:
             
             app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership created! ')
+
+            print(f"{dir(sub_result)} {sub_result}")
+            print(f"{sub_result.subscription} {dir(sub_result.subscription)}")
+            welcome.on_signup(
+                    name = request.form.get("first_name") + ' ' + request.form.get("last_name"),
+                    email = request.form.get("email"),
+                    subscription_id = sub_result.subscription.id,
+                    groups = [request.form.get("membership_type")], 
+                    logger = app.logger)
+
+
             return flask.render_template(
                     'thanks.html',
                     title="Membership Information Updated",
