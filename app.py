@@ -289,7 +289,7 @@ def signup():
     if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
         return flask.render_template('error.html')
     else:
-        app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} {request.form.get("date")}, {request.form.get("uuid")}, {request.form.get("hash")}! ')
+        app.logger.info(f'valid hash {request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} {request.form.get("date")}, {request.form.get("uuid")}, {request.form.get("hash")}! ')
 
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
         app.logger.info("found customer redirecting to update endpoint")
@@ -317,6 +317,8 @@ def signup():
         })
     if not result.is_success:
         app.logger.error(f"ERROR: {result.errors}")
+        for error in result.errors.deep_errors:
+            app.logger.error(f"ERROR Creating customer: {error.attribute} {error.code} {error.message}")
         return flask.render_template('error.html')
 
     if len(result.customer.payment_methods) < 1:

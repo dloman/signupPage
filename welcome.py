@@ -91,15 +91,16 @@ welcome_email = """
 </html>
 """
 template = Template(welcome_email)
+key = "iuu5Ati7vaiG5ahyone3aeSespohsho7Aahxoh6GoxaeB6XiezooVaiN3baxahF7A"
 
 def send_welcome_email(name, email, logger):
     html_message = MIMEText(template.render(name=name), 'html')
     html_message['Subject'] = "Welcome to SBHX!"
-    html_message['From'] = 'admin@sbhackerspace.com'
+    html_message['From'] = 'Welcome@sbhackerspace.com'
     html_message['To'] = 'SBHX_Welcome@sbhackerspace.com'
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
-       smtp_server.login('auth@sbhackerspace.com', os.environ['GMAIL_APP_PASSWORD'])
-       smtp_server.sendmail('auth@sbhackerspace.com', email, html_message.as_string())
+       smtp_server.login('Welcome@sbhackerspace.com', os.environ['GMAIL_APP_PASSWORD'])
+       smtp_server.sendmail('Welcome@sbhackerspace.com', email, html_message.as_string())
     logger.info(f"Welcome Message sent {name} {email}")
 
 def get_groups(groups):
@@ -115,7 +116,6 @@ def get_groups(groups):
     return authentik_groups
 
 def on_signup(name, email, subscription_id, groups, logger):
-    key = "iuu5Ati7vaiG5ahyone3aeSespohsho7Aahxoh6GoxaeB6XiezooVaiN3baxahF7A"
     username = name.lower().replace(' ', '')
     logger.info(f"username = {username}")
     response = requests.post("http://10.18.14.203:8000/create_user", json={
@@ -132,11 +132,11 @@ def on_signup(name, email, subscription_id, groups, logger):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=DEFAULT_LOG_LEVEL, format=DEFAULT_LOG_FORMAT)
+    logging.basicConfig(level='INFO', format="%(levelname)s:%(name)s:%(message)s")
     # Get a logger instance for your module
     logger = logging.getLogger(__name__)
 
     if len(sys.argv) > 2:
-        on_signup(name =sys.argv[1], email=sys.argv[2], subscription_id='fffff', groups=["student"], logger = logger)
+        on_signup(name =sys.argv[1], email=sys.argv[2], subscription_id='fffff', groups=["advanced"], logger = logger)
     else:
         print("usage: python3 welcome.py NAME EMAIL")
