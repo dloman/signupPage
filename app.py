@@ -4,6 +4,7 @@ from flask import request
 import braintree
 import datetime
 import os
+import sys
 import json
 from dotenv import load_dotenv
 import logging
@@ -11,18 +12,21 @@ import uuid
 import hmac
 import hashlib
 import welcome
-
+from loguru import logger
 load_dotenv()
 
 app = flask.Flask(__name__)
 app.logger = logging.getLogger('waitress')
 app.logger.setLevel(logging.INFO)
+# Configure logging
+logger.remove()
+logger.add(sys.stdout, level=logging.INFO)
 total_donated = 0.0
 try:
     with open('donationTotal.json', 'r') as openfile:
         total_donated = float(json.load(openfile)["total_donated"])
 except:
-    app.logger.error("An exception occurred reading total donated")
+    logger.error("An exception occurred reading total donated")
     total_donated = 2000
 
 def get_enviroment(env):
@@ -84,12 +88,12 @@ def hash_invalid(date, uuid, request_hash):
     except:
         request_date = None
     if request_date is None or (datetime.date.today() - request_date).days > 2:
-        app.logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
+        logger.error(f"ERROR: {request_date.isoformat()} is to far away from today {datetime.date.today()}")
         return True
 
     generated_hash = generate_hash(request.form.get("uuid"), request_date)
     if request.form.get("hash") != generated_hash:
-        app.logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
+        logger.error(f"ERROR: {request_date.isoformat()} {request.form.get('hash')} generated hash = {generated_hash}")
         return True
     else:
         return False
@@ -125,11 +129,11 @@ def update_info():
 
 @app.route('/update', methods=['POST'])
 def update():
-    app.logger.info(f'updating {request.form.get("first_name")} {request.form.get("last_name")} ')
+    logger.info(f'updating {request.form.get("first_name")} {request.form.get("last_name")} ')
     collection = bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email"))
 
     for customer in collection.items:
-        app.logger.info(f"updating cusomter {customer}")
+        logger.info(f"updating cusomter {customer}")
         result = bt_gateway.customer.update(
             customer.id,
             {
@@ -150,43 +154,43 @@ def update():
                 },
                 "payment_method_nonce": request.form.get("payment_method_nonce"),
             })
-        app.logger.debug(f"result = {result}")
+        logger.debug(f"result = {result}")
         if not result.is_success:
-            app.logger.error(f"ERROR: {result.message}")
+            logger.error(f"ERROR: {result.message}")
             return flask.render_template('error.html')
 
         if len(result.customer.payment_methods) < 1:
-            app.logger.error("ERROR: no payment methods ")
+            logger.error("ERROR: no payment methods ")
             return flask.render_template('error.html')
 
         for card in result.customer.payment_methods:
-            app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
+            logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
             sub_result = bt_gateway.subscription.create({
                 "payment_method_token": card.token,
                 "plan_id": get_plan_id(request.form.get("membership_type")),
                 })
             if sub_result.is_success:
-                app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership updated! ')
-                app.logger.info(f"{sub_result.subscription} ")
+                logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership updated! ')
+                logger.info(f"{sub_result.subscription} ")
                 welcome.on_signup(
                         name = request.form.get("first_name") + ' ' + request.form.get("last_name"),
                         email = request.form.get("email"),
                         subscription_id = sub_result.subscription.id,
                         groups = [request.form.get("membership_type")],
-                        logger = app.logger)
+                        logger = logger)
                 return flask.render_template(
                         'thanks.html',
                         title="Membership Information Updated",
                         thanks="Thank you for continuing to be a sustaining sbhx member.")
 
-            app.logger.error(f"ERROR: {sub_result.errors}")
-    app.logger.error(f"ERROR: unable to find customers")
+            logger.error(f"ERROR: {sub_result.errors}")
+    logger.error(f"ERROR: unable to find customers")
     return flask.render_template('error.html')
 
 
 @app.route('/donate', methods=['POST'])
 def donate():
-    app.logger.info(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
+    logger.info(f'trying to buy {request.form.get("item")} ${request.form.get("amount")}')
     request_uuid = uuid.uuid4()
     return flask.render_template(
             'form_donate.html',
@@ -289,14 +293,14 @@ def signup():
     if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
         return flask.render_template('error.html')
     else:
-        app.logger.info(f'valid hash {request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} {request.form.get("date")}, {request.form.get("uuid")}, {request.form.get("hash")}! ')
+        logger.info(f'valid hash {request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} {request.form.get("date")}, {request.form.get("uuid")}, {request.form.get("hash")}! ')
 
     if len(list(bt_gateway.customer.search(braintree.CustomerSearch.email == request.form.get("email")).items)) > 0:
-        app.logger.info("found customer redirecting to update endpoint")
+        logger.info("found customer redirecting to update endpoint")
         return flask.redirect(flask.url_for('update'), code=307)
 
     
-    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} creating customer! ')
+    logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} {request.form.get("email")} creating customer! ')
     result = bt_gateway.customer.create({
         "first_name": request.form.get("first_name"),
         "last_name": request.form.get("last_name"),
@@ -316,24 +320,24 @@ def signup():
         "payment_method_nonce": request.form.get("payment_method_nonce"),
         })
     if not result.is_success:
-        app.logger.error(f"ERROR: {result.errors}")
+        logger.error(f"ERROR: {result.errors}")
         for error in result.errors.deep_errors:
-            app.logger.error(f"ERROR Creating customer: {error.attribute} {error.code} {error.message}")
+            logger.error(f"ERROR Creating customer: {error.attribute} {error.code} {error.message}")
         return flask.render_template('error.html')
 
     if len(result.customer.payment_methods) < 1:
-        app.logger.error("ERROR: no payment methods ")
+        logger.error("ERROR: no payment methods ")
         return flask.render_template('error.html')
 
     for card in result.customer.payment_methods:
-        app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
+        logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} creating {request.form.get("membership_type")} subscription! ')
         sub_result = bt_gateway.subscription.create({
             "payment_method_token": card.token,
             "plan_id": get_plan_id(request.form.get("membership_type")),
             })
         if sub_result.is_success:
             
-            app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership created! ')
+            logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} membership created! ')
 
             print(f"{dir(sub_result)} {sub_result}")
             print(f"{sub_result.subscription} {dir(sub_result.subscription)}")
@@ -342,7 +346,7 @@ def signup():
                     email = request.form.get("email"),
                     subscription_id = sub_result.subscription.id,
                     groups = [request.form.get("membership_type")], 
-                    logger = app.logger)
+                    logger = logger)
 
 
             return flask.render_template(
@@ -350,19 +354,19 @@ def signup():
                     title="Membership Information Updated",
                     thanks="Thank you for becoming a sustaining SBHX Member")
 
-        app.logger.error(f"ERROR: {sub_result.errors}")
+        logger.error(f"ERROR: {sub_result.errors}")
     return flask.render_template('error.html')
 
 @app.route("/donation_transaction", methods=['POST'])
 def donation_transaction():
-    app.logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")} {request.environ.get("HTTP_X_REAL_IP", request.remote_addr)}')
+    logger.info(f'{request.form.get("first_name")} {request.form.get("last_name")} is trying to buy {request.form.get("item")} ${request.form.get("amount")} {request.form.get("email")} anon = ${request.form.get("anonymous")} {request.environ.get("HTTP_X_REAL_IP", request.remote_addr)}')
     global total_donated
 
     if hash_invalid(request.form.get("date"), request.form.get("uuid"), request.form.get("hash")):
         return flask.render_template('error.html')
 
 
-    app.logger.info(f"before total amount donated = {total_donated}")
+    logger.info(f"before total amount donated = {total_donated}")
     result = bt_gateway.transaction.sale({
         "amount": request.form.get("amount"),
         "payment_method_nonce": request.form.get("payment_method_nonce"),
@@ -385,7 +389,7 @@ def donation_transaction():
         })
     if result.is_success:
         total_donated += float(request.form.get("amount"))
-        app.logger.info(f"after total amount donated = {total_donated}")
+        logger.info(f"after total amount donated = {total_donated}")
         with open("donationTotal.json", 'w') as f:
             json.dump({"total_donated": total_donated}, f)
         return flask.render_template(
@@ -393,7 +397,7 @@ def donation_transaction():
                 title="Donation Complete!",
                 thanks="Thank you for being a sustaining SBHX Donor")
 
-    app.logger.error(f"ERROR: {result} {result.errors}")
+    logger.error(f"ERROR: {result} {result.errors}")
     return flask.render_template('error.html')
 
 if __name__ == "__main__":
